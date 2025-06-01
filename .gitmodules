@@ -1,0 +1,3 @@
+[submodule "STLite"]
+	path = STLite
+	url = git@github.com:weikz863/STLite-ACM-2025.git
