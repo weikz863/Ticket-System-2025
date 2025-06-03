@@ -1,4 +1,4 @@
 testcases/
 build/
 *.log
-/code
+code
