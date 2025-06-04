@@ -3,9 +3,10 @@
 #include <string_view>
 #include "user.hpp"
 using std::string, std::cout, std::endl, std::string_view;
+UserHandler::UserHandler() : map("user_handler") {}
 int UserHandler::add_user(const string_view cur_username, const string_view username, const string_view password, 
       const string_view name, const string_view mailAddr, const string_view priviledge) {
-  // cout << cur_username << username << password << name << mailAddr << priviledge << endl;
+  if ()
   return 0;
 }
 int UserHandler::login(const string_view username, const string_view password) {  
