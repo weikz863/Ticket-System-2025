@@ -68,5 +68,42 @@ string UserHandler::query_profile(const string_view cur_username, const string_v
 }
 string UserHandler::modify_profile(const string_view cur_username, const string_view username, const string_view password, 
       const string_view name, const string_view mailAddr, const string_view priviledge) {
-  return "-1";
+  auto cur_ref = map[cur_username];
+  if (cur_ref.empty() || !cur_ref->logged) return "-1";
+  char new_priv = 16;
+  if (priviledge.size()) {
+    std::from_chars(priviledge.begin(), priviledge.end(), new_priv);
+    if (cur_ref->priviledge <= new_priv) return "-1";
+  }
+  if (cur_username == username) {
+    if (password.size()) copy_string(cur_ref->password, password);
+    if (name.size()) copy_string(cur_ref->name, name);
+    if (mailAddr.size()) copy_string(cur_ref->mailAddr, mailAddr);
+    if (new_priv != 16) cur_ref->priviledge = new_priv;
+    std::ostringstream ret;
+    ret << username;
+    ret << ' ';
+    ret << cur_ref->name;
+    ret << ' ';
+    ret << cur_ref->mailAddr;
+    ret << ' ';
+    ret << int(cur_ref->priviledge);
+    return ret.str(); 
+  } else {
+    auto ref = map[username];
+    if (ref.empty() || cur_ref->priviledge <= ref->priviledge) return "-1";
+    if (password.size()) copy_string(ref->password, password);
+    if (name.size()) copy_string(ref->name, name);
+    if (mailAddr.size()) copy_string(ref->mailAddr, mailAddr);
+    if (new_priv != 16) ref->priviledge = new_priv;
+    std::ostringstream ret;
+    ret << username;
+    ret << ' ';
+    ret << ref->name;
+    ret << ' ';
+    ret << ref->mailAddr;
+    ret << ' ';
+    ret << int(ref->priviledge);
+    return ret.str(); 
+  }
 }
