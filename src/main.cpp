@@ -134,6 +134,6 @@ int main() {
     } else {
       throw sjtu::runtime_error();
     }
-    std::cout << '\n';
+    std::cout << endl;
   }
 }

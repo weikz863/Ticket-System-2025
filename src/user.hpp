@@ -8,12 +8,13 @@
 #include <cstring>
 #include <string_view>
 #include "unique_map.hpp"
+#include "utility.hpp"
 using std::string, std::cout, std::endl, std::string_view;
+void copy_string(char *dst, const string_view &src);
 struct Username {
   char str[24];
   Username(const string_view username_ = "") {
-    memcpy(str, username_.data(), username_.size());
-    str[username_.size()] = 0;
+    copy_string(str, username_);
   }
   bool operator < (const Username &other) const {
     return std::strcmp(str, other.str) < 0;
@@ -22,14 +23,12 @@ struct Username {
 struct UserData {
   char password[32], name[20], mailAddr[32];
   char priviledge, logged;
+  UserData() = default;
   UserData(const string_view password_, const string_view name_, const string_view mailAddr_, 
         char priviledge_ = 10) : priviledge(priviledge_), logged(false) {
-    memcpy(password, password_.data(), password_.size());
-    password[password_.size()] = 0;
-    memcpy(name, name_.data(), name_.size());
-    name[name_.size()] = 0;
-    memcpy(mailAddr, mailAddr_.data(), mailAddr_.size());
-    mailAddr[mailAddr_.size()] = 0;
+    copy_string(password, password_);
+    copy_string(name, name_);
+    copy_string(mailAddr, mailAddr_);
   }
 };
 class UserHandler {
@@ -37,6 +36,7 @@ class UserHandler {
   UniqueMap<Username, UserData> map;
  public:
   UserHandler();
+  bool logged_in(const string_view&);
   int add_user(const string_view, const string_view, const string_view, const string_view, const string_view, const string_view);
   int login(const string_view, const string_view);
   int logout(const string_view);
