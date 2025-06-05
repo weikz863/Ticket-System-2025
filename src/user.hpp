@@ -9,8 +9,8 @@
 #include <string_view>
 #include "unique_map.hpp"
 #include "utility.hpp"
+#include "string_utility.hpp"
 using std::string, std::cout, std::endl, std::string_view;
-void copy_string(char *dst, const string_view &src);
 struct Username {
   char str[24];
   Username(const string_view username_ = "") {

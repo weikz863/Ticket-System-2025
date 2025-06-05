@@ -5,10 +5,6 @@
 #include <charconv>
 #include "user.hpp"
 using std::string, std::cout, std::endl, std::string_view;
-void copy_string(char *dst, const string_view &src) {
-  memcpy(dst, src.data(), src.size());
-  dst[src.size()] = 0;
-}
 UserHandler::UserHandler() : map("user_handler") {}
 bool UserHandler::logged_in(const string_view &username) {
   auto ref = map[username];
