@@ -9,5 +9,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/STLite/bpt/src)
-file(GLOB_RECURSE main_src ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
-add_executable(code ${main_src})
+set(SOURCES 
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/user.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/string_utility.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/train.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/ticket.cpp
+)
+add_executable(code ${SOURCES})
