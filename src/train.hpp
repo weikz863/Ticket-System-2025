@@ -35,7 +35,7 @@ struct TrainData {
   TrainData(const string_view& stationNum, const string_view& seatNum, 
       const string& stations, const string& prices, const string_view& startTime, 
       const string& travelTimes, const string& stopoverTimes, 
-      const string& saleDate, const string_view& type_) : type{type_[0]} {
+      const string& saleDate, const string_view& type_) : type{type_[0]}, seat{} {
     int stationNumInt, seatNumInt;
     std::from_chars(stationNum.begin(), stationNum.end(), stationNumInt);
     std::from_chars(seatNum.begin(), seatNum.end(), seatNumInt);
@@ -69,6 +69,7 @@ struct TrainData {
         current += tmpint;
       }
     }
+    station[stationNumInt].name[0] = 0;
     for (std::getline(saleDateStream, tmpstr, '|'); saleDateStream; std::getline(saleDateStream, tmpstr, '|')) {
       int date = datify(tmpstr);
       for (int j = 0; j < stationNumInt - 1; j++) {
@@ -82,6 +83,9 @@ struct NameAndTrain {
   char name[32];
   int train;
   NameAndTrain() = default;
+  NameAndTrain(const char *name_, int train_) : train(train_) {
+    std::memcpy(name, name_, 32);
+  }
   bool operator < (const NameAndTrain &x) const {
     int t = std::strcmp(name, x.name);
     return t < 0 || (t == 0 && train < x.train);
