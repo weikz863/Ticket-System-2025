@@ -363,6 +363,7 @@ int main() {
           }
         }
       }
+      cout << ticket_handler.query_order(username);
     } else
       throw sjtu::runtime_error();
     std::cout << endl;

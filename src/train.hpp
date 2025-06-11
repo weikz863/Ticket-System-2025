@@ -29,14 +29,15 @@ struct TrainData {
     Time arriving, leaving;
     int price;
   } station[25];
-  char type;
+  char type, stationNumInt, trainID[32];
   int seat[100][25];
   TrainData() = default;
-  TrainData(const string_view& stationNum, const string_view& seatNum, 
+  TrainData(const string_view& trainID_, const string_view& stationNum, const string_view& seatNum, 
       const string& stations, const string& prices, const string_view& startTime, 
       const string& travelTimes, const string& stopoverTimes, 
       const string& saleDate, const string_view& type_) : type{type_[0]}, seat{} {
-    int stationNumInt, seatNumInt;
+    copy_string(trainID, trainID_);
+    int seatNumInt;
     std::from_chars(stationNum.begin(), stationNum.end(), stationNumInt);
     std::from_chars(seatNum.begin(), seatNum.end(), seatNumInt);
     Time current(startTime);
@@ -70,8 +71,12 @@ struct TrainData {
       }
     }
     station[stationNumInt].name[0] = 0;
-    for (std::getline(saleDateStream, tmpstr, '|'); saleDateStream; std::getline(saleDateStream, tmpstr, '|')) {
-      int date = datify(tmpstr);
+    int first_date, last_date;
+    std::getline(saleDateStream, tmpstr, '|');
+    first_date = datify(tmpstr);
+    std::getline(saleDateStream, tmpstr, '|');
+    last_date = datify(tmpstr);
+    for (int date = first_date; date <= last_date; date++) {
       for (int j = 0; j < stationNumInt - 1; j++) {
         seat[date][j] = seatNumInt;
       }
@@ -85,6 +90,9 @@ struct NameAndTrain {
   NameAndTrain() = default;
   NameAndTrain(const char *name_, int train_) : train(train_) {
     std::memcpy(name, name_, 32);
+  }
+  NameAndTrain(const string_view& name_, int train_) : train(train_) {
+    copy_string(name, name_);
   }
   bool operator < (const NameAndTrain &x) const {
     int t = std::strcmp(name, x.name);

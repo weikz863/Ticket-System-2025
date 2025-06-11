@@ -20,4 +20,6 @@ struct Time {
   Time& operator += (int);
 };
 
+std::ostream& operator << (std::ostream &, Time);
+
 #endif
