@@ -1,5 +1,6 @@
 #include "train.hpp"
 #include <algorithm>
+#include <functional>
 
 using std::stable_sort;
 
@@ -45,12 +46,12 @@ string TrainHandler::query_ticket(const string_view from, const string_view to,
     for (int j = 0; j < to_trains.size(); j++) {
       if (from_trains[i].train == to_trains[j].train) {
         auto ref = map.make_reference(from_trains[i].train);
-        ans.push_back({});
         int x = dateInt, from_station = 0, to_station = 0;
         while (from != ref->station[from_station].name) from_station++;
         x -= ref->station[from_station].leaving.date;
         while (to != ref->station[to_station].name) to_station++;
         if (from_station < to_station && x >= 0 && ref->seat[x][ref->stationNumInt - 1] == -1) {
+          ans.push_back({});
           std::strcpy(ans.back().trainID, ref->trainID);
           ans.back().leaving = ref->station[from_station].leaving;
           ans.back().leaving.date += x;
@@ -61,13 +62,20 @@ string TrainHandler::query_ticket(const string_view from, const string_view to,
           for (int k = from_station; k < to_station; k++) {
             ans.back().seat = std::min(ans.back().seat, ref->seat[x][k]);
           }
-        } else {
-          ans.pop_back();
         }
         break;
       }
     }
   }
+  std::function cost = [&] (const RetType& lhs, const RetType& rhs) {
+    return lhs.price < rhs.price || 
+      (lhs.price == rhs.price && lhs.arriving - lhs.leaving < rhs.arriving - rhs.leaving);
+  };
+  std::function time = [&] (const RetType& lhs, const RetType& rhs) {
+    return lhs.arriving - lhs.leaving < rhs.arriving - rhs.leaving || 
+      (lhs.arriving - lhs.leaving == rhs.arriving - rhs.leaving && lhs.price < rhs.price);
+  };
+  stable_sort(ans.begin(), ans.end(), preference[0] == 'c' ? cost: time);
   ret << ans.size();
   for (int i = 0; i < ans.size(); i++) {
     ret << '\n' << ans[i].trainID << ' ' << from << ' ' << ans[i].leaving << " -> " 

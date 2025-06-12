@@ -60,6 +60,9 @@ Time& Time::operator += (int x) {
   time %= (24 * 60);
   return *this;
 }
+int Time::operator - (const Time &other) const {
+  return (date - other.date) * 24 * 60 + (time - other.time);
+}
 
 std::ostream& operator << (std::ostream &os, Time x) {
   return os << to_date(x.date) << ' ' << to_time(x.time);

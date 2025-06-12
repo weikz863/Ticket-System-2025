@@ -18,6 +18,7 @@ struct Time {
   Time(const string_view&);
   Time(std::nullptr_t);
   Time& operator += (int);
+  int operator - (const Time&) const;
 };
 
 std::ostream& operator << (std::ostream &, Time);
