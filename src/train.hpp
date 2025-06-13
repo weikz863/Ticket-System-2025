@@ -29,13 +29,13 @@ struct TrainData {
     Time arriving, leaving;
     int price;
   } station[25];
-  char type, stationNumInt, trainID[32];
+  char type, stationNumInt, trainID[32], released;
   int seat[100][25];
   TrainData() = default;
   TrainData(const string_view& trainID_, const string_view& stationNum, const string_view& seatNum, 
       const string& stations, const string& prices, const string_view& startTime, 
       const string& travelTimes, const string& stopoverTimes, 
-      const string& saleDate, const string_view& type_) : type{type_[0]}, seat{} {
+      const string& saleDate, const string_view& type_) : type{type_[0]}, seat{}, released{0} {
     copy_string(trainID, trainID_);
     int seatNumInt;
     std::from_chars(stationNum.begin(), stationNum.end(), stationNumInt);
@@ -77,10 +77,9 @@ struct TrainData {
     std::getline(saleDateStream, tmpstr, '|');
     last_date = datify(tmpstr);
     for (int date = first_date; date <= last_date; date++) {
-      for (int j = 0; j < stationNumInt - 1; j++) {
+      for (int j = 0; j < stationNumInt; j++) {
         seat[date][j] = seatNumInt;
       }
-      seat[date][stationNumInt - 1] = -1;
     }
   }
 };
@@ -100,6 +99,7 @@ struct NameAndTrain {
   }
 };
 class TrainHandler {
+  friend class TicketHandler;
  private:
   UniqueMap<TrainID, TrainData> map;
   BlockBlockList<NameAndTrain, 4096 / sizeof(sjtu::pair<NameAndTrain, int>)> tree;

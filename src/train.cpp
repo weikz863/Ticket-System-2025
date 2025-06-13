@@ -24,6 +24,7 @@ int TrainHandler::release_train(const string_view trainID) {
   for (int i = 0; ref->station[i].name[0]; i++) {
     tree.insert(NameAndTrain(ref->station[i].name, ref.file_pos()));
   }
+  ref->released = 1;
   return 0;
 }
 string TrainHandler::query_train(const string_view, const string_view) {
@@ -47,10 +48,13 @@ string TrainHandler::query_ticket(const string_view from, const string_view to,
       if (from_trains[i].train == to_trains[j].train) {
         auto ref = map.make_reference(from_trains[i].train);
         int x = dateInt, from_station = 0, to_station = 0;
-        while (from != ref->station[from_station].name) from_station++;
+        while (from_station < ref->stationNumInt && 
+            from != ref->station[from_station].name) from_station++;
+        while (to_station < ref->stationNumInt &&
+            to != ref->station[to_station].name) to_station++;
+        if (from_station == ref->stationNumInt || to_station == ref->stationNumInt) return "-1";
         x -= ref->station[from_station].leaving.date;
-        while (to != ref->station[to_station].name) to_station++;
-        if (from_station < to_station && x >= 0 && ref->seat[x][ref->stationNumInt - 1] == -1) {
+        if (from_station < to_station && x >= 0 && ref->seat[x][ref->stationNumInt - 1] > 0) {
           ans.push_back({});
           std::strcpy(ans.back().trainID, ref->trainID);
           ans.back().leaving = ref->station[from_station].leaving;

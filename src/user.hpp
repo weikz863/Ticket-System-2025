@@ -32,6 +32,7 @@ struct UserData {
   }
 };
 class UserHandler {
+  friend class TicketHandler;
  private:
   UniqueMap<Username, UserData> map;
  public:
