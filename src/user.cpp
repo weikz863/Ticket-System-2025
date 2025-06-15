@@ -103,3 +103,7 @@ string UserHandler::modify_profile(const string_view cur_username, const string_
     return ret.str(); 
   }
 }
+const char* UserHandler::exit() {
+  map.for_each([] (UserData& x) { x.logged = 0; });
+  return "bye";
+}

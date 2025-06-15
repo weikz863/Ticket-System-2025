@@ -75,13 +75,12 @@ string TrainHandler::query_ticket(const string_view from, const string_view to,
   }
   std::function cost = [&] (const RetType& lhs, const RetType& rhs) {
     return lhs.price < rhs.price || 
-      (lhs.price == rhs.price && lhs.arriving - lhs.leaving < rhs.arriving - rhs.leaving) ||
-      (lhs.price == rhs.price && lhs.arriving - lhs.leaving == rhs.arriving - rhs.leaving && std::strcmp(lhs.trainID, rhs.trainID) < 0);
+      (lhs.price == rhs.price && std::strcmp(lhs.trainID, rhs.trainID) < 0);
   };
   std::function time = [&] (const RetType& lhs, const RetType& rhs) {
     return lhs.arriving - lhs.leaving < rhs.arriving - rhs.leaving || 
-      (lhs.arriving - lhs.leaving == rhs.arriving - rhs.leaving && lhs.price < rhs.price) ||
-      (lhs.arriving - lhs.leaving == rhs.arriving - rhs.leaving && lhs.price == rhs.price && std::strcmp(lhs.trainID, rhs.trainID) < 0);
+      (lhs.arriving - lhs.leaving == rhs.arriving - rhs.leaving && 
+          std::strcmp(lhs.trainID, rhs.trainID) < 0);
   };
   sort(ans.begin(), ans.end(), preference[0] == 'c' ? cost: time);
   ret << ans.size();

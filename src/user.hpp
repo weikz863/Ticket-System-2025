@@ -43,5 +43,6 @@ class UserHandler {
   int logout(const string_view);
   string query_profile(const string_view, const string_view);
   string modify_profile(const string_view, const string_view, const string_view, const string_view, const string_view, const string_view);
+  const char* exit();
 };
 #endif

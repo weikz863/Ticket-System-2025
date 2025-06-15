@@ -5,7 +5,8 @@
 extern UserHandler user_handler;
 extern TrainHandler train_handler;
 
-TicketHandler::TicketHandler() : order("order_bbl"), userorder("user_order_bbl") {}
+TicketHandler::TicketHandler() : order("order_map"), userorder("user_order_bbl"), 
+    queueing("queue_bbl") {}
 string TicketHandler::buy_ticket(const string_view username, const string_view trainID,
     const string_view date, const string_view num, const string_view from,
     const string_view to, const string_view queue, const string_view stamp) {
@@ -33,20 +34,26 @@ string TicketHandler::buy_ticket(const string_view username, const string_view t
       for (int k = from_station; k < to_station; k++) {
         train_ref->seat[x][k] -= numInt;
       }
-      int stampInt;
+      int stampInt = 0;
       std::from_chars(stamp.begin() + 1, stamp.end() - 1, stampInt);
       userorder.insert({user_ref.file_pos(), stampInt});
       order.insert(stampInt, Order(train_ref.file_pos(), from_station, to_station, numInt, x));
       return std::to_string(min_seat * 
           (train_ref->station[to_station].price - train_ref->station[from_station].price));
+    } else if (queue[0] == 't') { // "true"
+      int stampInt = 0;
+      std::from_chars(stamp.begin() + 1, stamp.end() - 1, stampInt);
+      userorder.insert({user_ref.file_pos(), stampInt});
+      order.insert(stampInt, Order(train_ref.file_pos(), from_station, to_station, numInt, x,
+          Order::Status::PENDING));
+      queueing.insert({{train_ref.file_pos(), x}, stampInt});
+      return "queue";
     } else {
-      throw BuyTicketError();
-      return "-1"; // TODO: queue
+      return "-1";
     }
   } else {
     return "-1";
   }
-  return "0";
 }
 string TicketHandler::query_order(const string_view username) {
   auto user_ref = user_handler.map[username];

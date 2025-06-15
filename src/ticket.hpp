@@ -19,14 +19,19 @@ struct Order {
     SUCCESS, PENDING, REFUNDED,
   } status;
   Order() = default;
-  Order(int train_pos_, int start_, int end_, int num_, int date_) : train_pos(train_pos_), 
-      start(start_), end(end_), num(num_), date(date_), status(Status::SUCCESS) {}
+  Order(int train_pos_, int start_, int end_, int num_, int date_, 
+    Status status_ = Status::SUCCESS) : 
+      train_pos(train_pos_), start(start_), end(end_), num(num_), date(date_), 
+      status(status_) {}
 };
 class TicketHandler {
  private:
-  UniqueMap<int, Order> order;
+  UniqueMap<int, Order> order; // timestamp to order info
   BlockBlockList<trivial_pair<int, int>, 
-      4096 / sizeof(trivial_pair<int, int>)> userorder;
+      4096 / sizeof(trivial_pair<int, int>)> userorder; // userID to order timestamp
+  using TupleIntIntInt = trivial_pair<trivial_pair<int, int>, int>;
+  BlockBlockList<TupleIntIntInt, 4096 / sizeof(TupleIntIntInt)> queueing;
+  // trainID and date to order timestamp
  public:
   TicketHandler();
   string buy_ticket(const string_view, const string_view, const string_view, 

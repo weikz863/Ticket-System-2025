@@ -16,7 +16,7 @@ int main() {
     std::cout << stamp << ' ';
     std::getline(ss, str, ' ');
     if (str == "exit") {
-      std::cout << "bye\n";
+      std::cout << user_handler.exit();
       break;
     } else if (str == "add_user") {
       std::string cur_username, username, password, name, mailAddr, priviledge;
