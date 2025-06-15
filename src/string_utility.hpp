@@ -15,6 +15,7 @@ int datify(const string_view);
 struct Time {
   int date, time;
   Time();
+  Time(int, int);
   Time(const string_view&);
   Time(std::nullptr_t);
   Time& operator += (int);

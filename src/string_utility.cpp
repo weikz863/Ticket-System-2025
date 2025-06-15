@@ -50,6 +50,7 @@ inline string to_time(int x) {
 }
 
 Time::Time() = default;
+Time::Time(int date_, int time_) : date(date_), time(time_) {}
 Time::Time(const string_view& x) : date(0), 
     time((x[0] - '0') * 600 + (x[1] - '0') * 60 + (x[3] - '0') * 10 + x[4] - '0') {}
 Time::Time(std::nullptr_t) : date(-1), time(-1) {}
