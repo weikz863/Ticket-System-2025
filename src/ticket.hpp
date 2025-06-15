@@ -31,7 +31,7 @@ class TicketHandler {
       4096 / sizeof(trivial_pair<int, int>)> userorder; // userID to order timestamp
   using TupleIntIntInt = trivial_pair<trivial_pair<int, int>, int>;
   BlockBlockList<TupleIntIntInt, 4096 / sizeof(TupleIntIntInt)> queueing;
-  // trainID and date to order timestamp
+  // train_pos and date to order timestamp
  public:
   TicketHandler();
   string buy_ticket(const string_view, const string_view, const string_view, 

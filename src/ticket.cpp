@@ -90,6 +90,51 @@ string TicketHandler::query_order(const string_view username) {
   }
   return ret.str();
 }
-int TicketHandler::refund_ticket(const string_view, const string_view) {
-  return -1;
+int TicketHandler::refund_ticket(const string_view username, const string_view num) {
+  auto user_ref = user_handler.map[username];
+  if (user_ref.empty() || !user_ref->logged) return -1;
+  int numInt;
+  std::from_chars(num.begin(), num.end(), numInt);
+  auto results = userorder.find({user_ref.file_pos(), 0}, {user_ref.file_pos(), INT_MAX});
+  if (numInt <= 0 || numInt > results.size()) return -1;
+  auto refundStamp = results[results.size() - numInt].second;
+  auto refund_ref = order[refundStamp];
+  switch (refund_ref->status) {
+    case Order::Status::PENDING : {
+      refund_ref->status = Order::Status::REFUNDED;
+      queueing.erase({{refund_ref->train_pos, refund_ref->date}, refundStamp});
+      break;
+    }
+    case Order::Status::SUCCESS : {
+      refund_ref->status = Order::Status::REFUNDED;
+      auto train_ref = train_handler.map.make_reference(refund_ref->train_pos);
+      for (int i = refund_ref->start; i < refund_ref->end; i++) {
+        train_ref->seat[refund_ref->date][i] += refund_ref->num;
+      }
+      auto queue = queueing.find({{refund_ref->train_pos, refund_ref->date}, 0}, 
+                                 {{refund_ref->train_pos, refund_ref->date}, INT_MAX});
+      for (int i = 0; i < queue.size(); i++) {
+        auto try_ref = order.make_reference(queue[i].second);
+        bool ok = true;
+        for (int j = try_ref->start; j < refund_ref->end; j++) {
+          if (train_ref->seat[refund_ref->date][j] < try_ref->num) {
+            ok = false;
+            break;
+          }
+        }
+        if (!ok) continue;
+        try_ref->status = Order::Status::SUCCESS;
+        for (int j = try_ref->start; j < refund_ref->end; j++) {
+          train_ref->seat[refund_ref->date][j] -= try_ref->num;
+        }
+        queueing.erase(queue[i]);
+      }
+      break;
+    }
+    case Order::Status::REFUNDED : {
+      return -1;
+      break;
+    }
+  }
+  return 0;
 }

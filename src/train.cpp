@@ -29,8 +29,25 @@ int TrainHandler::release_train(const string_view trainID) {
   ref->released = 1;
   return 0;
 }
-string TrainHandler::query_train(const string_view, const string_view) {
-  return "-1";
+string TrainHandler::query_train(const string_view trainID, const string_view date) {
+  auto ref = map[trainID];
+  int dateInt = datify(date);
+  if (ref.empty() || dateInt <= 0 || ref->seat[dateInt][ref->stationNumInt - 1] <= 0) return "-1";
+  std::ostringstream ans;
+  ans << ref->trainID << ' ' << ref->type;
+  for (int i = 0; i < ref->stationNumInt; i++) {
+    auto arriving = ref->station[i].arriving, leaving = ref->station[i].leaving;
+    if (arriving.date != -1) arriving.date += dateInt;
+    if (leaving.date != -1) leaving.date += dateInt;
+    ans << '\n' << ref->station[i].name << ' ' << arriving << " -> " << leaving << ' '
+      << ref->station[i].price << ' ';
+    if (i == ref->stationNumInt - 1) {
+      ans << 'x';
+    } else {
+      ans << ref->seat[dateInt][i];
+    }
+  } 
+  return ans.str();
 }
 string TrainHandler::query_ticket(const string_view from, const string_view to, 
     const string_view date, const string_view preference) {
