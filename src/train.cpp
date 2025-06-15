@@ -32,7 +32,8 @@ int TrainHandler::release_train(const string_view trainID) {
 string TrainHandler::query_train(const string_view trainID, const string_view date) {
   auto ref = map[trainID];
   int dateInt = datify(date);
-  if (ref.empty() || dateInt <= 0 || ref->seat[dateInt][ref->stationNumInt - 1] <= 0) return "-1";
+  if (ref.empty() || dateInt <= 0 || dateInt >= 100 ||
+      ref->seat[dateInt][ref->stationNumInt - 1] <= 0) return "-1";
   std::ostringstream ans;
   ans << ref->trainID << ' ' << ref->type;
   for (int i = 0; i < ref->stationNumInt; i++) {
