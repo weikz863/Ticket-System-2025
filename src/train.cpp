@@ -61,7 +61,7 @@ string TrainHandler::query_ticket(const string_view from, const string_view to,
   auto from_trains = tree.find(NameAndTrain(from, 0), NameAndTrain(from, INT_MAX));
   auto to_trains = tree.find(NameAndTrain(to, 0), NameAndTrain(to, INT_MAX));
   int dateInt = datify(date);
-  if (dateInt == 99) return "0";
+  if (dateInt <= 0) return "0";
   for (int i = 0; i < from_trains.size(); i++) { // optimize this!
     for (int j = 0; j < to_trains.size(); j++) {
       if (from_trains[i].train == to_trains[j].train) {
@@ -145,6 +145,7 @@ string TrainHandler::query_transfer(const string_view from, const string_view to
   std::ostringstream ret;
   auto from_trains = tree.find(NameAndTrain(from, 0), NameAndTrain(from, INT_MAX));
   int dateInt = datify(date);
+  if (dateInt <= 0) return "0";
   for (int i = 0; i < from_trains.size(); i++) {
     auto train1_ref = map.make_reference(from_trains[i].train);
     int x = dateInt, from_station = 0;
@@ -152,7 +153,7 @@ string TrainHandler::query_transfer(const string_view from, const string_view to
         from != train1_ref->station[from_station].name) from_station++;
     if (from_station == train1_ref->stationNumInt) throw RetType();
     x -= train1_ref->station[from_station].leaving.date;
-    if (train1_ref->seat[x][train1_ref->stationNumInt - 1] <= 0) continue;
+    if (x <= 0 || train1_ref->seat[x][train1_ref->stationNumInt - 1] <= 0) continue;
     RetType tmp;
     std::memcpy(tmp.trainID[0], train1_ref->trainID, 32);
     tmp.leaving[0] = train1_ref->station[from_station].leaving;
@@ -176,7 +177,7 @@ string TrainHandler::query_transfer(const string_view from, const string_view to
           exchange_station++;
         y -= train2_ref->station[exchange_station].leaving.date;
         if (train2_ref->station[exchange_station].leaving.time <= pre_ans.arriving[0].time) y++;
-        if (train2_ref->seat[y][train2_ref->stationNumInt - 1] <= 0) continue;
+        if (y <= 0 || train2_ref->seat[y][train2_ref->stationNumInt - 1] <= 0) continue;
         pre_ans.seat[1] = INT_MAX;
         for (int k = exchange_station + 1; k < train2_ref->stationNumInt; k++) {
           pre_ans.seat[1] = std::min(pre_ans.seat[1], train2_ref->seat[y][k - 1]);
