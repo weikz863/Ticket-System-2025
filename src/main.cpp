@@ -9,10 +9,11 @@ UserHandler user_handler;
 TrainHandler train_handler;
 TicketHandler ticket_handler;
 int main() {
+  std::string stamp;
   for (std::string str; std::getline(std::cin, str); ) {
     std::stringstream ss(std::move(str));
-    std::getline(ss, str, ' ');
-    std::cout << str << ' ';
+    std::getline(ss, stamp, ' ');
+    std::cout << stamp << ' ';
     std::getline(ss, str, ' ');
     if (str == "exit") {
       std::cout << "bye\n";
@@ -329,7 +330,7 @@ int main() {
           }
         }
       }
-      cout << ticket_handler.buy_ticket(username, trainID, date, number, from, to, queue);
+      cout << ticket_handler.buy_ticket(username, trainID, date, number, from, to, queue, stamp);
     } else if (str == "refund_ticket") {
       string username, number = "1";
       while (std::getline(ss, str, ' ')) {

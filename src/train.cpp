@@ -16,6 +16,8 @@ int TrainHandler::add_train(const string_view trainID, const string_view station
   return 0;
 }
 int TrainHandler::delete_train(const string_view trainID) {
+  auto ref = map[trainID];
+  if (ref->released) return -1;
   return map.erase(trainID) ? 0 : -1;
 }
 int TrainHandler::release_train(const string_view trainID) {
