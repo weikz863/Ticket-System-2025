@@ -25,7 +25,8 @@ string TicketHandler::buy_ticket(const string_view username, const string_view t
   if (from_station == train_ref->stationNumInt || to_station == train_ref->stationNumInt) 
     return "-1";
   x -= train_ref->station[from_station].leaving.date;
-  if (from_station < to_station && x >= 0 && train_ref->seat[x][train_ref->stationNumInt - 1] > 0) {
+  if (from_station < to_station && x >= 0 && x < 100 &&
+      train_ref->seat[x][train_ref->stationNumInt - 1] > 0) {
     int min_seat = numInt;
     for (int k = from_station; k < to_station; k++) {
       min_seat = std::min(min_seat, train_ref->seat[x][k]);

@@ -74,7 +74,7 @@ string TrainHandler::query_ticket(const string_view from, const string_view to,
             to != ref->station[to_station].name) to_station++;
         if (from_station == ref->stationNumInt || to_station == ref->stationNumInt) throw RetType();
         x -= ref->station[from_station].leaving.date;
-        if (from_station < to_station && x >= 0 && ref->seat[x][ref->stationNumInt - 1] > 0) {
+        if (from_station < to_station && x >= 0 && x < 100 && ref->seat[x][ref->stationNumInt - 1] > 0) {
           ans.push_back({});
           std::strcpy(ans.back().trainID, ref->trainID);
           ans.back().leaving = ref->station[from_station].leaving;
@@ -154,7 +154,7 @@ string TrainHandler::query_transfer(const string_view from, const string_view to
         from != train1_ref->station[from_station].name) from_station++;
     if (from_station == train1_ref->stationNumInt) throw RetType();
     x -= train1_ref->station[from_station].leaving.date;
-    if (x <= 0 || train1_ref->seat[x][train1_ref->stationNumInt - 1] <= 0) continue;
+    if (x <= 0 || x >= 100 || train1_ref->seat[x][train1_ref->stationNumInt - 1] <= 0) continue;
     RetType tmp;
     std::memcpy(tmp.trainID[0], train1_ref->trainID, 32);
     tmp.leaving[0] = train1_ref->station[from_station].leaving;
@@ -178,7 +178,7 @@ string TrainHandler::query_transfer(const string_view from, const string_view to
           exchange_station++;
         y -= train2_ref->station[exchange_station].leaving.date;
         if (train2_ref->station[exchange_station].leaving.time <= pre_ans.arriving[0].time) y++;
-        if (y <= 0 || train2_ref->seat[y][train2_ref->stationNumInt - 1] <= 0) continue;
+        if (y <= 0 || y >= 100 || train2_ref->seat[y][train2_ref->stationNumInt - 1] <= 0) continue;
         pre_ans.seat[1] = INT_MAX;
         for (int k = exchange_station + 1; k < train2_ref->stationNumInt; k++) {
           pre_ans.seat[1] = std::min(pre_ans.seat[1], train2_ref->seat[y][k - 1]);
